@@ -15,7 +15,7 @@ enum {
     P1_SCORE_POS2 = 31,
     P2_SCORE_POS1 = 49,
     P2_SCORE_POS2 = 50,
-};
+}; 
 
 const char BALL = '$';
 const char BORDER = '#';
@@ -50,8 +50,8 @@ int main(void) {
 
         ball_x_direction = get_x_direction(ball_column, ball_row, ball_x_direction, p1_row, p2_row);
         ball_y_direction = get_y_direction(ball_row, ball_y_direction);
-        ball_row += ball_y_direction;
         ball_column += ball_x_direction;
+        ball_row += ball_y_direction;
 
         key_pressed = getchar();
     }
