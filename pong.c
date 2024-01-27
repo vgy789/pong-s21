@@ -19,6 +19,12 @@ enum {
     WIN_SCORE = 21,
 };
 
+const char* BALL = "\e[39;41m ";
+const char* BORDER = "\e[32;46m ";
+const char* NET = "\e[39;100m ";
+const char* PLAYER = "\e[39;42m ";
+const char* SPACE = " ";
+
 typedef struct {
     int x;
     int y;
@@ -31,41 +37,21 @@ typedef struct {
     int p2;
 } game_score;
 
-const char* BALL = "\e[39;41m ";
-const char* BORDER = "\e[32;46m ";
-const char* NET = "\e[39;100m ";
-const char* PLAYER = "\e[39;42m ";
-const char* SPACE = " ";
-
 void cls(void);
 void print_frame(game_ball ball, int p1_row, int p2_row, game_score score);
-
-void game_control(void);
-int get_x_direction(int x_position, int y_position, int x_direction, int p1_pos, int p2_pos);
-int get_y_direction(int y_position, int y_direction);
-
 void hide_cursor(void);
 void show_cursor(void);
 void set_default_color(void);
-
 void win_scr1(void);
 void win_scr2(void);
 
 game_ball ball_movement(game_ball ball, int p1_row, int p2_row);
+int get_x_direction(int x_position, int y_position, int x_direction, int p1_pos, int p2_pos);
+int get_y_direction(int y_position, int y_direction);
+game_ball ball_reset(game_ball ball);
+game_score upd_score(game_score score, game_ball ball);
 
 _Bool is_round_won(game_ball ball) { return ball.x == 1 || ball.x == BORDER_LENGTH - 1; }
-
-game_score upd_score(game_score score, game_ball ball) {
-    ball.x == 1 ? ++score.p2 : ++score.p1;
-    return score;
-}
-
-game_ball ball_reset(game_ball ball) {
-    ball.x = BALL_INIT_COLUMN;
-    ball.y = BALL_INIT_ROW;
-    ball.x_vector *= -1;
-    return ball;
-}
 
 int main(void) {
     int key_pressed;
@@ -101,18 +87,7 @@ int main(void) {
     return 0;
 }
 
-game_ball ball_movement(game_ball ball, int p1_row, int p2_row) {
-    ball.x_vector = get_x_direction(ball.x, ball.y, ball.x_vector, p1_row, p2_row);
-    ball.y_vector = get_y_direction(ball.y, ball.y_vector);
-    ball.x += ball.x_vector;
-    ball.y += ball.y_vector;
-    return ball;
-}
-
 void cls(void) { printf("\e[1;1H\e[2J"); }
-void hide_cursor(void) { printf("\e[?25l"); }
-void show_cursor(void) { printf("\e[?25h"); }
-void set_default_color(void) { printf("\e[39;49m"); };
 
 void print_score(int column, game_score score) {
     if (column == P1_SCORE_POS1)
@@ -149,6 +124,10 @@ void print_frame(game_ball ball, int p1_row, int p2_row, game_score score) {
     }
 }
 
+void hide_cursor(void) { printf("\e[?25l"); }
+void show_cursor(void) { printf("\e[?25h"); }
+void set_default_color(void) { printf("\e[39;49m"); };
+
 int get_x_direction(int x_position, int y_position, int x_direction, int p1_pos, int p2_pos) {
     int direction = x_direction;
     if ((x_position == P1_COLUMN || x_position == P2_COLUMN) &&
@@ -162,6 +141,26 @@ int get_y_direction(int y_position, int y_direction) {
     int direction = y_direction;
     if (y_position == (BORDER_WIDTH - 2) || y_position == 1) direction *= -1;
     return direction;
+}
+
+game_ball ball_movement(game_ball ball, int p1_row, int p2_row) {
+    ball.x_vector = get_x_direction(ball.x, ball.y, ball.x_vector, p1_row, p2_row);
+    ball.y_vector = get_y_direction(ball.y, ball.y_vector);
+    ball.x += ball.x_vector;
+    ball.y += ball.y_vector;
+    return ball;
+}
+
+game_ball ball_reset(game_ball ball) {
+    ball.x = BALL_INIT_COLUMN;
+    ball.y = BALL_INIT_ROW;
+    ball.x_vector *= -1;
+    return ball;
+}
+
+game_score upd_score(game_score score, game_ball ball) {
+    ball.x == 1 ? ++score.p2 : ++score.p1;
+    return score;
 }
 
 void win_scr1(void) {
