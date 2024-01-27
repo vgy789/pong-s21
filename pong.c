@@ -65,8 +65,8 @@ void print_frame(int ball_column, int ball_row, int p1_row, int p2_row, int p1_s
             } else if ((row >= p1_row - 1 && row <= p1_row + 1 && col == P1_COLUMN) ||
                        (row >= p2_row - 1 && row <= p2_row + 1 && col == P2_COLUMN)) {
                 printf("%c", PLAYER);
-            // } else if (row == 2 && (col == 30 || col == 31 || col == 46 || col == 47)) {
-            //    print_score(col, p1_score, p2_score);
+                // } else if (row == 2 && (col == 30 || col == 31 || col == 46 || col == 47)) {
+                //    print_score(col, p1_score, p2_score);
             } else if (col == BALL_INIT_COLUMN) {
                 printf("%c", NET);
             } else {
