@@ -9,7 +9,12 @@ enum {
     P1_COLUMN = 3,
     P2_COLUMN = BORDER_LENGTH - 4,
     P_INIT_ROW = BORDER_WIDTH / 2,
-    P_INIT_SCORE = 21,
+    P_INIT_SCORE = 0,
+
+    P1_SCORE_POS1 = 30,
+    P1_SCORE_POS2 = 31,
+    P2_SCORE_POS1 = 49,
+    P2_SCORE_POS2 = 50,
 };
 
 const char BALL = '$';
@@ -31,6 +36,7 @@ int main(void) {
     int ball_row = BALL_INIT_ROW;
     int ball_x_direction = 1;
     int ball_y_direction = 1;
+
     int key_pressed;
     int p1_score = P_INIT_SCORE;
     int p2_score = P_INIT_SCORE;
@@ -41,10 +47,12 @@ int main(void) {
     while (key_pressed != 'q') {
         cls();
         print_frame(ball_column, ball_row, P_INIT_ROW, P_INIT_ROW, p1_score, p2_score);
+
         ball_x_direction = get_x_direction(ball_column, ball_row, ball_x_direction, p1_row, p2_row);
         ball_y_direction = get_y_direction(ball_row, ball_y_direction);
         ball_row += ball_y_direction;
         ball_column += ball_x_direction;
+
         key_pressed = getchar();
     }
 
@@ -54,16 +62,14 @@ int main(void) {
 void cls(void) { printf("\e[1;1H\e[2J"); }
 
 void print_score(int column, int p1_score, int p2_score) {
-    switch (column) {
-        case 30:
-            printf("%c", (p1_score / 10) + 48);
-        case 31:
-            printf("%c", (p1_score % 10) + 48);
-        case 46:
-            printf("%c", (p2_score / 10) + 48);
-        case 47:
-            printf("%c", (p2_score % 10) + 48);
-    }
+    if (column == P1_SCORE_POS1)
+        printf("%c", (p1_score / 10) + '0');
+    else if (column == P1_SCORE_POS2)
+        printf("%c", (p1_score % 10) + '0');
+    else if (column == P2_SCORE_POS1)
+        printf("%c", (p2_score / 10) + '0');
+    else if (column == P2_SCORE_POS2)
+        printf("%c", (p2_score % 10) + '0');
 }
 
 void print_frame(int ball_column, int ball_row, int p1_row, int p2_row, int p1_score, int p2_score) {
@@ -76,8 +82,9 @@ void print_frame(int ball_column, int ball_row, int p1_row, int p2_row, int p1_s
             } else if ((row >= p1_row - 1 && row <= p1_row + 1 && col == P1_COLUMN) ||
                        (row >= p2_row - 1 && row <= p2_row + 1 && col == P2_COLUMN)) {
                 printf("%c", PLAYER);
-                // } else if (row == 2 && (col == 30 || col == 31 || col == 46 || col == 47)) {
-                //    print_score(col, p1_score, p2_score);
+            } else if (row == 2 && (col == P1_SCORE_POS1 || col == P1_SCORE_POS2 || col == P2_SCORE_POS1 ||
+                                    col == P2_SCORE_POS2)) {
+                print_score(col, p1_score, p2_score);
             } else if (col == BALL_INIT_COLUMN) {
                 printf("%c", NET);
             } else {
