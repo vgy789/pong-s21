@@ -9,7 +9,7 @@ enum {
 
     BALL_INIT_COLUMN = BORDER_LENGTH / 2,
     BALL_INIT_ROW = BORDER_WIDTH / 2,
-    P_INIT_ROW = BORDER_WIDTH / 2,
+    P_INIT_ROW = 5,
 };
 
 const char PLAYER = '|';
@@ -19,7 +19,7 @@ const char SPACE = ' ';
 const char NET = '|';
 
 void print_frame(int ball_column, int ball_row, int p1_row, int p2_row);
-int get_x_direction(int x_position, int x_direction);
+int get_x_direction(int x_position,int y_position, int x_direction, int p1_pos, int p2_pos);
 int get_y_direction(int y_position, int y_direction);
 
 int main(void) {
@@ -28,10 +28,12 @@ int main(void) {
     int ball_x_direction = 1;
     int ball_y_direction = 1;
     int key_pressed;
+    int p1_row = P_INIT_ROW;
+    int p2_row = P_INIT_ROW;
 
     while (key_pressed != 'q') {
-        print_frame(ball_column, ball_row, P_INIT_ROW, P_INIT_ROW);
-        ball_x_direction = get_x_direction(ball_column, ball_x_direction);
+        print_frame(ball_column, ball_row, p1_row, p2_row);
+        ball_x_direction = get_x_direction(ball_column, ball_row, ball_x_direction, p1_row, p2_row);
         ball_y_direction = get_y_direction(ball_row, ball_y_direction);
         ball_row += ball_y_direction;
         ball_column += ball_x_direction;
@@ -63,9 +65,9 @@ void print_frame(int ball_column, int ball_row, int p1_row, int p2_row) {
     }
 }
 
-int get_x_direction(int x_position, int x_direction) {
+int get_x_direction(int x_position, int y_position, int x_direction, int p1_pos, int p2_pos) {
     int direction = x_direction;
-    if (x_position == (BORDER_LENGTH - 3) || x_position == 3) direction *= -1;
+    if ((x_position == P1_COLUMN || x_position == P2_COLUMN) && (y_position == p1_pos || y_position == p1_pos + 1 || y_position == p1_pos -1 || y_position == p2_pos || y_position == p2_pos + 1 || y_position == p2_pos -1)) direction *= -1;
     return direction;
 }
 
