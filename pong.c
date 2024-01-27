@@ -3,7 +3,6 @@
 enum {
     BORDER_LENGTH = 80,
     BORDER_WIDTH = 25,
-
     BALL_INIT_COLUMN = BORDER_LENGTH / 2,
     BALL_INIT_ROW = BORDER_WIDTH / 2,
 
@@ -24,16 +23,28 @@ void game_control(void);
 
 void print_frame(int ball_column, int ball_row, int p1_row, int p2_row, int p1_score, int p2_score);
 
+int get_x_direction(int x_position, int y_position, int x_direction, int p1_pos, int p2_pos);
+int get_y_direction(int y_position, int y_direction);
+
 int main(void) {
     int ball_column = BALL_INIT_COLUMN;
     int ball_row = BALL_INIT_ROW;
+    int ball_x_direction = 1;
+    int ball_y_direction = 1;
     int key_pressed;
     int p1_score = P_INIT_SCORE;
     int p2_score = P_INIT_SCORE;
 
+    int p1_row = P_INIT_ROW;
+    int p2_row = P_INIT_ROW;
+
     while (key_pressed != 'q') {
         cls();
         print_frame(ball_column, ball_row, P_INIT_ROW, P_INIT_ROW, p1_score, p2_score);
+        ball_x_direction = get_x_direction(ball_column, ball_row, ball_x_direction, p1_row, p2_row);
+        ball_y_direction = get_y_direction(ball_row, ball_y_direction);
+        ball_row += ball_y_direction;
+        ball_column += ball_x_direction;
         key_pressed = getchar();
     }
 
@@ -75,4 +86,19 @@ void print_frame(int ball_column, int ball_row, int p1_row, int p2_row, int p1_s
         }
         printf("\n");
     }
+}
+
+int get_x_direction(int x_position, int y_position, int x_direction, int p1_pos, int p2_pos) {
+    int direction = x_direction;
+    if ((x_position == P1_COLUMN || x_position == P2_COLUMN) &&
+        (y_position == p1_pos || y_position == p1_pos + 1 || y_position == p1_pos - 1 ||
+         y_position == p2_pos || y_position == p2_pos + 1 || y_position == p2_pos - 1))
+        direction *= -1;
+    return direction;
+}
+
+int get_y_direction(int y_position, int y_direction) {
+    int direction = y_direction;
+    if (y_position == (BORDER_WIDTH - 2) || y_position == 1) direction *= -1;
+    return direction;
 }
