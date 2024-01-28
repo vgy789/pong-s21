@@ -32,7 +32,7 @@ enum {
 };
 
 const char* ch_ball = "\e[39;41m ";
-const char* border = "\e[32;46m ";
+const char* border = "\e[39;46m ";
 const char* ch_net = "\e[39;100m ";
 const char* player = "\e[39;42m ";
 const char* space = " ";
