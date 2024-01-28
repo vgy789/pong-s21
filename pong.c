@@ -44,9 +44,9 @@ void show_cursor(void);
 void set_default_color(void);
 void win_scr1(void);
 void win_scr2(void);
-int is_left_row_control_key(char key);
-int is_right_row_control_key(char key);
-int change_row_position(int current_row_position, char key);
+int is_p1_key(char key);
+int is_p2_key(char key);
+int move_p(int current_row_position, char key);
 
 game_ball ball_movement(game_ball ball, int p1_row, int p2_row);
 int get_x_direction(int y_position, int x_position, int x_direction, int p1_pos, int p2_pos);
@@ -78,13 +78,10 @@ int main(void) {
 
         key_pressed = getchar();
         
-        if (is_left_row_control_key(key_pressed)) {
-            p1_row += change_row_position(p1_row, key_pressed);
-            print_frame(ball, p1_row, p2_row, score);
-        } else if (is_right_row_control_key(key_pressed)) {
-            p2_row += change_row_position(p2_row, key_pressed);
-            print_frame(ball, p1_row, p2_row, score);
-        }
+        if (is_p1_key(key_pressed)) 
+            p1_row += move_p(p1_row, key_pressed);
+        else if (is_p2_key(key_pressed))
+            p2_row += move_p(p2_row, key_pressed);
 
     } while (score.p1 != 21 && score.p2 != 21 && key_pressed != 'q' && key_pressed != 'Q');
 
@@ -195,21 +192,21 @@ void win_scr2(void) {
     printf("        ##        #########     ###  ###  #### ##    ##");
 }
 
-int is_left_row_control_key(char key) {
+int is_p1_key(char key) {
     int res = 0;
     if ((key == 'a') || (key == 'A') || (key == 'z') || (key == 'Z'))
         res = 1;
     return res;
 }
 
-int is_right_row_control_key(char key) {
+int is_p2_key(char key) {
     int res = 0;
     if ((key == 'k') || (key == 'K') || (key == 'm') || (key == 'M'))
         res = 1;
     return res;
 }
 
-int change_row_position(int current_row_position, char key) {
+int move_p(int current_row_position, char key) {
     int new_position = 0;
 
     if (((key == 'a') || (key == 'A') || (key == 'k') || (key == 'K')) && !(current_row_position <= BORDER_WIDTH - BORDER_WIDTH + 2))
