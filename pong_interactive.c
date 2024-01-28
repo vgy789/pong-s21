@@ -40,7 +40,7 @@ void win_scr1(void);
 void win_scr2(void);
 int is_p1_key(char key);
 int is_p2_key(char key);
-int move_p(int current_position, char key);
+int move_player(int current_position, char key);
 
 game_ball ball_movement(game_ball ball, int p1_row, int p2_row);
 int get_x_direction(int y_position, int x_position, int x_direction, int p1_pos, int p2_pos);
@@ -76,9 +76,9 @@ int main(void) {
         key_pressed = getch();
 
         if (is_p1_key(key_pressed))
-            p1_row += move_p(p1_row, key_pressed);
+            p1_row += move_player(p1_row, key_pressed);
         else if (is_p2_key(key_pressed))
-            p2_row += move_p(p2_row, key_pressed);
+            p2_row += move_player(p2_row, key_pressed);
 
     } while (score.p1 != 21 && score.p2 != 21 && key_pressed != 'q' && key_pressed != 'Q');
 
@@ -95,11 +95,11 @@ int main(void) {
 void initcurses(void) {
     initscr();
     start_color();
-    cbreak();                   // отключает буферизацию строк и обработку символов стирания
-    timeout(delay_duration);    // не ожидать ввод
-    keypad(stdscr, TRUE);       // обрабатывать стрелочки как 1 введённый символ
-    noecho();                   // ввод без эха
-    curs_set(0);                // скрыть курсор
+    cbreak();  // отключает буферизацию строк и обработку символов стирания
+    timeout(delay_duration);  // не ожидать ввод
+    keypad(stdscr, TRUE);  // обрабатывать стрелочки как 1 введённый символ
+    noecho();              // ввод без эха
+    curs_set(0);           // скрыть курсор
 
     // создать цветовые пары
     init_pair(1, COLOR_RED, COLOR_RED);
@@ -206,7 +206,7 @@ int is_p2_key(char key) {
     return res;
 }
 
-int move_p(int current_position, char key) {
+int move_player(int current_position, char key) {
     int new_position = 0;
 
     if (((key == 'a') || (key == 'A') || (key == 'k') || (key == 'K')) &&

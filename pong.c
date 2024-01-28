@@ -37,7 +37,6 @@ const char* ch_net = "\e[39;100m ";
 const char* player = "\e[39;42m ";
 const char* space = " ";
 
-
 void cls(void);
 void print_frame(game_ball ball, int p1_row, int p2_row, game_score score);
 void hide_cursor(void);
@@ -45,9 +44,9 @@ void show_cursor(void);
 void set_default_color(void);
 void win_scr1(void);
 void win_scr2(void);
-int is_p1_key(char key);
-int is_p2_key(char key);
-int move_p(int current_row_position, char key);
+int p1_control(char key);
+int p2_control(char key);
+int move_player(int current_row_position, char key);
 
 game_ball ball_movement(game_ball ball, int p1_row, int p2_row);
 int get_x_direction(int y_position, int x_position, int x_direction, int p1_pos, int p2_pos);
@@ -79,10 +78,10 @@ int main(void) {
 
         key_pressed = getchar();
 
-        if (is_p1_key(key_pressed))
-            p1_row += move_p(p1_row, key_pressed);
-        else if (is_p2_key(key_pressed))
-            p2_row += move_p(p2_row, key_pressed);
+        if (p1_control(key_pressed))
+            p1_row += move_player(p1_row, key_pressed);
+        else if (p2_control(key_pressed))
+            p2_row += move_player(p2_row, key_pressed);
     } while (score.p1 != 21 && score.p2 != 21 && key_pressed != 'q' && key_pressed != 'Q');
 
     cls();
@@ -192,19 +191,11 @@ void win_scr2(void) {
     printf("        ##        #########     ###  ###  #### ##    ##        ");
 }
 
-int is_p1_key(char key) {
-    int res = 0;
-    if ((key == 'a') || (key == 'A') || (key == 'z') || (key == 'Z')) res = 1;
-    return res;
-}
+int p1_control(char key) { return ((key == 'a') || (key == 'A') || (key == 'z') || (key == 'Z')); }
 
-int is_p2_key(char key) {
-    int res = 0;
-    if ((key == 'k') || (key == 'K') || (key == 'm') || (key == 'M')) res = 1;
-    return res;
-}
+int p2_control(char key) { return ((key == 'k') || (key == 'K') || (key == 'm') || (key == 'M')); }
 
-int move_p(int current_row_position, char key) {
+int move_player(int current_row_position, char key) {
     int new_position = 0;
 
     if (((key == 'a') || (key == 'A') || (key == 'k') || (key == 'K')) &&
