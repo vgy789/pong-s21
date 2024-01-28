@@ -34,6 +34,7 @@ typedef struct {
     int p2;
 } game_score;
 
+void initcurses(void);
 void print_frame(game_ball ball, int p1_row, int p2_row, game_score score);
 void win_scr1(void);
 void win_scr2(void);
@@ -52,21 +53,7 @@ int main(void) {
     int p1_row = p_init_row;
     int p2_row = p_init_row;
 
-    /* Initialize curses */
-    initscr();
-    start_color();
-    cbreak();  // отключает буферизацию строк и обработку символов стирания
-    timeout(delay_duration);
-    keypad(stdscr, TRUE);  // возможность обрабатывать стрелочки и f1-f9
-    noecho();              // ввод без эха
-    curs_set(0);           // скрыть курсор
-
-    // создать цветовую пару
-    init_pair(1, COLOR_RED, COLOR_RED);
-    init_pair(2, COLOR_CYAN, COLOR_CYAN);
-    init_pair(3, COLOR_YELLOW, COLOR_YELLOW);
-    init_pair(4, COLOR_GREEN, COLOR_GREEN);
-    init_pair(5, -1, -1);
+    initcurses();
 
     game_ball ball = {ball_init_column, ball_init_row, 1, 1};
 
@@ -92,6 +79,23 @@ int main(void) {
 
     endwin();
     return 0;
+}
+
+void initcurses(void) {
+    initscr();
+    start_color();
+    cbreak();  // отключает буферизацию строк и обработку символов стирания
+    timeout(delay_duration);  // не ожидать ввод
+    keypad(stdscr, TRUE);  // обрабатывать стрелочки как 1 введённый символ
+    noecho();              // ввод без эха
+    curs_set(0);           // скрыть курсор
+
+    // создать цветовые пары
+    init_pair(1, COLOR_RED, COLOR_RED);
+    init_pair(2, COLOR_CYAN, COLOR_CYAN);
+    init_pair(3, COLOR_YELLOW, COLOR_YELLOW);
+    init_pair(4, COLOR_GREEN, COLOR_GREEN);
+    init_pair(5, -1, -1);
 }
 
 void print_score(game_score score) {

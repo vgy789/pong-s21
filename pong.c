@@ -77,7 +77,7 @@ int main(void) {
         }
 
         key_pressed = getchar();
-        
+
         if (is_left_row_control_key(key_pressed)) {
             p1_row += change_row_position(p1_row, key_pressed);
             print_frame(ball, p1_row, p2_row, score);
@@ -176,45 +176,45 @@ game_score upd_score(game_score score, game_ball ball) {
 }
 
 void win_scr1(void) {
-    printf("        ########     ##      ##      ## #### ##    ##\n");
-    printf("        ##     ##  ####      ##  ##  ##  ##  ###   ##\n");
-    printf("        ##     ##    ##      ##  ##  ##  ##  ####  ##\n");
-    printf("        ########     ##      ##  ##  ##  ##  ## ## ##\n");
-    printf("        ##           ##      ##  ##  ##  ##  ##  ####\n");
-    printf("        ##           ##      ##  ##  ##  ##  ##   ###\n");
-    printf("        ##         ######     ###  ###  #### ##    ##");
+    printf("        ########     ##      ##      ## #### ##    ##   \n");
+    printf("        ##     ##  ####      ##  ##  ##  ##  ###   ##   \n");
+    printf("        ##     ##    ##      ##  ##  ##  ##  ####  ##   \n");
+    printf("        ########     ##      ##  ##  ##  ##  ## ## ##   \n");
+    printf("        ##           ##      ##  ##  ##  ##  ##  ####   \n");
+    printf("        ##           ##      ##  ##  ##  ##  ##   ###   \n");
+    printf("        ##         ######     ###  ###  #### ##    ##   ");
 }
 
 void win_scr2(void) {
-    printf("        ########   #######     ##      ## #### ##    ##\n");
-    printf("        ##     ## ##     ##    ##  ##  ##  ##  ###   ##\n");
-    printf("        ##     ##        ##    ##  ##  ##  ##  ####  ##\n");
-    printf("        ########   #######     ##  ##  ##  ##  ## ## ##\n");
-    printf("        ##        ##           ##  ##  ##  ##  ##  ####\n");
-    printf("        ##        ##           ##  ##  ##  ##  ##   ###\n");
-    printf("        ##        #########     ###  ###  #### ##    ##");
+    printf("        ########   #######     ##      ## #### ##    ##   \n");
+    printf("        ##     ## ##     ##    ##  ##  ##  ##  ###   ##   \n");
+    printf("        ##     ##        ##    ##  ##  ##  ##  ####  ##   \n");
+    printf("        ########   #######     ##  ##  ##  ##  ## ## ##   \n");
+    printf("        ##        ##           ##  ##  ##  ##  ##  ####   \n");
+    printf("        ##        ##           ##  ##  ##  ##  ##   ###   \n");
+    printf("        ##        #########     ###  ###  #### ##    ##   ");
 }
 
 int is_left_row_control_key(char key) {
     int res = 0;
-    if ((key == 'a') || (key == 'A') || (key == 'z') || (key == 'Z'))
-        res = 1;
+    if ((key == 'a') || (key == 'A') || (key == 'z') || (key == 'Z')) res = 1;
     return res;
 }
 
 int is_right_row_control_key(char key) {
     int res = 0;
-    if ((key == 'k') || (key == 'K') || (key == 'm') || (key == 'M'))
-        res = 1;
+    if ((key == 'k') || (key == 'K') || (key == 'm') || (key == 'M')) res = 1;
     return res;
 }
 
 int change_row_position(int current_row_position, char key) {
     int new_position = 0;
 
-    if (((key == 'a') || (key == 'A') || (key == 'k') || (key == 'K')) && !(current_row_position <= BORDER_WIDTH - BORDER_WIDTH + 2))
+    if (((key == 'a') || (key == 'A') || (key == 'k') || (key == 'K')) &&
+        !(current_row_position <= BORDER_WIDTH - BORDER_WIDTH + 2))
         new_position = -1;
-    else if (((key == 'z') || (key == 'Z') || (key == 'm') || (key == 'M')) && !(current_row_position >= BORDER_WIDTH - 3))
+    else if (((key == 'z') || (key == 'Z') || (key == 'm') || (key == 'M')) &&
+             !(current_row_position >= BORDER_WIDTH - 3))
         new_position = 1;
 
     return new_position;
