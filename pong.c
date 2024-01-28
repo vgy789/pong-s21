@@ -1,10 +1,22 @@
 #include <stdio.h>
 
+typedef struct {
+    int x;
+    int y;
+    int x_vector;
+    int y_vector;
+} game_ball;
+
+typedef struct {
+    int p1;
+    int p2;
+} game_score;
+
 enum {
     border_length = 80,
     border_width = 25,
     ball_init_column = border_length / 2,
-    BALL_INIT_ROW = border_width / 2,
+    ball_init_row = border_width / 2,
 
     p1_column = 3,
     p2_column = border_length - 4,
@@ -25,17 +37,6 @@ const char* ch_net = "\e[39;100m ";
 const char* player = "\e[39;42m ";
 const char* space = " ";
 
-typedef struct {
-    int x;
-    int y;
-    int x_vector;
-    int y_vector;
-} game_ball;
-
-typedef struct {
-    int p1;
-    int p2;
-} game_score;
 
 void cls(void);
 void print_frame(game_ball ball, int p1_row, int p2_row, game_score score);
@@ -64,7 +65,7 @@ int main(void) {
 
     hide_cursor();
 
-    game_ball ball = {ball_init_column, BALL_INIT_ROW, 1, 1};
+    game_ball ball = {ball_init_column, ball_init_row, 1, 1};
 
     do {
         cls();
@@ -77,8 +78,8 @@ int main(void) {
         }
 
         key_pressed = getchar();
-        
-        if (is_p1_key(key_pressed)) 
+
+        if (is_p1_key(key_pressed))
             p1_row += move_p(p1_row, key_pressed);
         else if (is_p2_key(key_pressed))
             p2_row += move_p(p2_row, key_pressed);
@@ -138,7 +139,7 @@ void set_default_color(void) { printf("\e[39;40m"); };
 
 int get_x_direction(int y_position, int x_position, int x_direction, int p1_pos, int p2_pos) {
     int direction = x_direction;
-    if ((x_position == p1_column + 1|| x_position == p2_column - 1) &&
+    if ((x_position == p1_column + 1 || x_position == p2_column - 1) &&
         (y_position == p1_pos || y_position == p1_pos + 1 || y_position == p1_pos - 1 ||
          y_position == p2_pos || y_position == p2_pos + 1 || y_position == p2_pos - 1))
         direction *= -1;
@@ -161,7 +162,7 @@ game_ball ball_movement(game_ball ball, int p1_row, int p2_row) {
 
 game_ball ball_reset(game_ball ball) {
     ball.x = ball_init_column;
-    ball.y = BALL_INIT_ROW;
+    ball.y = ball_init_row;
     ball.x_vector *= -1;
     return ball;
 }

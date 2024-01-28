@@ -1,6 +1,18 @@
 #include <ncurses.h>
 #include <stdio.h>
 
+typedef struct {
+    int x;
+    int y;
+    int x_vector;
+    int y_vector;
+} game_ball;
+
+typedef struct {
+    int p1;
+    int p2;
+} game_score;
+
 enum {
     delay_duration = 100,
 
@@ -21,18 +33,6 @@ enum {
 
     win_score = 21,
 };
-
-typedef struct {
-    int x;
-    int y;
-    int x_vector;
-    int y_vector;
-} game_ball;
-
-typedef struct {
-    int p1;
-    int p2;
-} game_score;
 
 void initcurses(void);
 void print_frame(game_ball ball, int p1_row, int p2_row, game_score score);
@@ -75,7 +75,7 @@ int main(void) {
 
         key_pressed = getch();
 
-        if (is_p1_key(key_pressed)) 
+        if (is_p1_key(key_pressed))
             p1_row += move_p(p1_row, key_pressed);
         else if (is_p2_key(key_pressed))
             p2_row += move_p(p2_row, key_pressed);
@@ -95,11 +95,11 @@ int main(void) {
 void initcurses(void) {
     initscr();
     start_color();
-    cbreak();  // отключает буферизацию строк и обработку символов стирания
-    timeout(delay_duration);  // не ожидать ввод
-    keypad(stdscr, TRUE);  // обрабатывать стрелочки как 1 введённый символ
-    noecho();              // ввод без эха
-    curs_set(0);           // скрыть курсор
+    cbreak();                   // отключает буферизацию строк и обработку символов стирания
+    timeout(delay_duration);    // не ожидать ввод
+    keypad(stdscr, TRUE);       // обрабатывать стрелочки как 1 введённый символ
+    noecho();                   // ввод без эха
+    curs_set(0);                // скрыть курсор
 
     // создать цветовые пары
     init_pair(1, COLOR_RED, COLOR_RED);
@@ -141,7 +141,7 @@ void print_frame(game_ball ball, int p1_row, int p2_row, game_score score) {
 
 int get_x_direction(int y_position, int x_position, int x_direction, int p1_pos, int p2_pos) {
     int direction = x_direction;
-    if ((x_position == p1_column + 1|| x_position == p2_column - 1) &&
+    if ((x_position == p1_column + 1 || x_position == p2_column - 1) &&
         (y_position == p1_pos || y_position == p1_pos + 1 || y_position == p1_pos - 1 ||
          y_position == p2_pos || y_position == p2_pos + 1 || y_position == p2_pos - 1))
         direction *= -1;
@@ -196,24 +196,24 @@ void win_scr2(void) {
 
 int is_p1_key(char key) {
     int res = 0;
-    if ((key == 'a') || (key == 'A') || (key == 'z') || (key == 'Z'))
-        res = 1;
+    if ((key == 'a') || (key == 'A') || (key == 'z') || (key == 'Z')) res = 1;
     return res;
 }
 
 int is_p2_key(char key) {
     int res = 0;
-    if ((key == 'k') || (key == 'K') || (key == 'm') || (key == 'M'))
-        res = 1;
+    if ((key == 'k') || (key == 'K') || (key == 'm') || (key == 'M')) res = 1;
     return res;
 }
 
 int move_p(int current_position, char key) {
     int new_position = 0;
 
-    if (((key == 'a') || (key == 'A') || (key == 'k') || (key == 'K')) && !(current_position <= border_width - border_width + 2))
+    if (((key == 'a') || (key == 'A') || (key == 'k') || (key == 'K')) &&
+        !(current_position <= border_width - border_width + 2))
         new_position = -1;
-    else if (((key == 'z') || (key == 'Z') || (key == 'm') || (key == 'M')) && !(current_position >= border_width - 3))
+    else if (((key == 'z') || (key == 'Z') || (key == 'm') || (key == 'M')) &&
+             !(current_position >= border_width - 3))
         new_position = 1;
 
     return new_position;
