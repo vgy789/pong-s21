@@ -126,7 +126,7 @@ void print_frame(game_ball ball, int p1_row, int p2_row, game_score score) {
 
 void hide_cursor(void) { printf("\e[?25l"); }
 void show_cursor(void) { printf("\e[?25h"); }
-void set_default_color(void) { printf("\e[39;49m"); };
+void set_default_color(void) { printf("\e[39;40m"); };
 
 int get_x_direction(int y_position, int x_position, int x_direction, int p1_pos, int p2_pos) {
     int direction = x_direction;
