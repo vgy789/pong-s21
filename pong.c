@@ -44,9 +44,8 @@ void show_cursor(void);
 void set_default_color(void);
 void win_scr1(void);
 void win_scr2(void);
-int p1_control(char key);
-int p2_control(char key);
-int move_player(int current_row_position, char key);
+int p1_control(char key, int current_pos);
+int p2_control(char key, int current_pos);
 
 game_ball ball_movement(game_ball ball, int p1_row, int p2_row);
 int get_x_direction(int y_position, int x_position, int x_direction, int p1_pos, int p2_pos);
@@ -77,11 +76,10 @@ int main(void) {
         }
 
         key_pressed = getchar();
-
-        if (p1_control(key_pressed))
-            p1_row += move_player(p1_row, key_pressed);
-        else if (p2_control(key_pressed))
-            p2_row += move_player(p2_row, key_pressed);
+        if (key_pressed != -1) {
+            p1_row += p1_control(key_pressed, p1_row);
+            p2_row += p2_control(key_pressed, p2_row);
+        }
     } while (score.p1 != 21 && score.p2 != 21 && key_pressed != 'q' && key_pressed != 'Q');
 
     cls();
@@ -191,19 +189,22 @@ void win_scr2(void) {
     printf("        ##        #########     ###  ###  #### ##    ##        ");
 }
 
-int p1_control(char key) { return ((key == 'a') || (key == 'A') || (key == 'z') || (key == 'Z')); }
+int p1_control(char key, int current_pos) {
+    int move = 0;
+    if (((key == 'a') || (key == 'A')) && current_pos != 2) {
+        move = -1;
+    } else if (((key == 'z') || (key == 'Z')) && current_pos != border_width - 3) {
+        move = 1;
+    }
+    return move;
+}
 
-int p2_control(char key) { return ((key == 'k') || (key == 'K') || (key == 'm') || (key == 'M')); }
-
-int move_player(int current_row_position, char key) {
-    int new_position = 0;
-
-    if (((key == 'a') || (key == 'A') || (key == 'k') || (key == 'K')) &&
-        !(current_row_position <= border_width - border_width + 2))
-        new_position = -1;
-    else if (((key == 'z') || (key == 'Z') || (key == 'm') || (key == 'M')) &&
-             !(current_row_position >= border_width - 3))
-        new_position = 1;
-
-    return new_position;
+int p2_control(char key, int current_pos) {
+    int move = 0;
+    if (((key == 'k') || (key == 'K')) && current_pos != 2) {
+        move = -1;
+    } else if (((key == 'm') || (key == 'M')) && current_pos != border_width - 3) {
+        move = 1;
+    }
+    return move;
 }
