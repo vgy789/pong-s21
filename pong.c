@@ -1,29 +1,29 @@
 #include <stdio.h>
 
 enum {
-    BORDER_LENGTH = 80,
-    BORDER_WIDTH = 25,
-    BALL_INIT_COLUMN = BORDER_LENGTH / 2,
-    BALL_INIT_ROW = BORDER_WIDTH / 2,
+    border_length = 80,
+    border_width = 25,
+    ball_init_column = border_length / 2,
+    BALL_INIT_ROW = border_width / 2,
 
-    P1_COLUMN = 3,
-    P2_COLUMN = BORDER_LENGTH - 4,
-    P_INIT_ROW = BORDER_WIDTH / 2,
-    P_INIT_SCORE = 0,
+    p1_column = 3,
+    p2_column = border_length - 4,
+    p_init_row = border_width / 2,
+    p_init_score = 0,
 
-    P1_SCORE_POS1 = 30,
-    P1_SCORE_POS2 = 31,
-    P2_SCORE_POS1 = 49,
-    P2_SCORE_POS2 = 50,
+    p1_score_pos1 = 30,
+    p1_score_pos2 = 31,
+    p2_score_pos1 = 49,
+    p2_score_pos2 = 50,
 
-    WIN_SCORE = 21,
+    win_score = 21,
 };
 
-const char* BALL = "\e[39;41m ";
-const char* BORDER = "\e[32;46m ";
-const char* NET = "\e[39;100m ";
-const char* PLAYER = "\e[39;42m ";
-const char* SPACE = " ";
+const char* ch_ball = "\e[39;41m ";
+const char* border = "\e[32;46m ";
+const char* ch_net = "\e[39;100m ";
+const char* player = "\e[39;42m ";
+const char* space = " ";
 
 typedef struct {
     int x;
@@ -54,17 +54,17 @@ int get_y_direction(int y_position, int y_direction);
 game_ball ball_reset(game_ball ball);
 game_score upd_score(game_score score, game_ball ball);
 
-_Bool is_round_won(game_ball ball) { return ball.x == 1 || ball.x == BORDER_LENGTH - 1; }
+_Bool is_round_won(game_ball ball) { return ball.x == 1 || ball.x == border_length - 1; }
 
 int main(void) {
     int key_pressed;
-    game_score score = {P_INIT_SCORE, P_INIT_SCORE};
-    int p1_row = P_INIT_ROW;
-    int p2_row = P_INIT_ROW;
+    game_score score = {p_init_score, p_init_score};
+    int p1_row = p_init_row;
+    int p2_row = p_init_row;
 
     hide_cursor();
 
-    game_ball ball = {BALL_INIT_COLUMN, BALL_INIT_ROW, 1, 1};
+    game_ball ball = {ball_init_column, BALL_INIT_ROW, 1, 1};
 
     do {
         cls();
@@ -85,9 +85,9 @@ int main(void) {
     } while (score.p1 != 21 && score.p2 != 21 && key_pressed != 'q' && key_pressed != 'Q');
 
     cls();
-    if (score.p1 == WIN_SCORE || score.p2 == WIN_SCORE) {
+    if (score.p1 == win_score || score.p2 == win_score) {
         printf("\e[32;49m");
-        score.p1 == WIN_SCORE ? win_scr1() : win_scr2();
+        score.p1 == win_score ? win_scr1() : win_scr2();
     }
 
     show_cursor();
@@ -98,33 +98,33 @@ int main(void) {
 void cls(void) { printf("\e[1;1H\e[2J"); }
 
 void print_score(int column, game_score score) {
-    if (column == P1_SCORE_POS1)
+    if (column == p1_score_pos1)
         printf("%c", (score.p1 / 10) + '0');
-    else if (column == P1_SCORE_POS2)
+    else if (column == p1_score_pos2)
         printf("%c", (score.p1 % 10) + '0');
-    else if (column == P2_SCORE_POS1)
+    else if (column == p2_score_pos1)
         printf("%c", (score.p2 / 10) + '0');
-    else if (column == P2_SCORE_POS2)
+    else if (column == p2_score_pos2)
         printf("%c", (score.p2 % 10) + '0');
 }
 
 void print_frame(game_ball ball, int p1_row, int p2_row, game_score score) {
-    for (int row = 0; row < BORDER_WIDTH; ++row) {
-        for (int col = 0; col < BORDER_LENGTH; ++col) {
-            if ((row == 0 || row == BORDER_WIDTH - 1) || (col == 0 || col == BORDER_LENGTH - 1)) {
-                printf("%s", BORDER);
+    for (int row = 0; row < border_width; ++row) {
+        for (int col = 0; col < border_length; ++col) {
+            if ((row == 0 || row == border_width - 1) || (col == 0 || col == border_length - 1)) {
+                printf("%s", border);
             } else if (row == ball.y && col == ball.x) {
-                printf("%s", BALL);
-            } else if ((row >= p1_row - 1 && row <= p1_row + 1 && col == P1_COLUMN) ||
-                       (row >= p2_row - 1 && row <= p2_row + 1 && col == P2_COLUMN)) {
-                printf("%s", PLAYER);
-            } else if (row == 2 && (col == P1_SCORE_POS1 || col == P1_SCORE_POS2 || col == P2_SCORE_POS1 ||
-                                    col == P2_SCORE_POS2)) {
+                printf("%s", ch_ball);
+            } else if ((row >= p1_row - 1 && row <= p1_row + 1 && col == p1_column) ||
+                       (row >= p2_row - 1 && row <= p2_row + 1 && col == p2_column)) {
+                printf("%s", player);
+            } else if (row == 2 && (col == p1_score_pos1 || col == p1_score_pos2 || col == p2_score_pos1 ||
+                                    col == p2_score_pos2)) {
                 print_score(col, score);
-            } else if (col == BALL_INIT_COLUMN) {
-                printf("%s", NET);
+            } else if (col == ball_init_column) {
+                printf("%s", ch_net);
             } else {
-                printf("%s", SPACE);
+                printf("%s", space);
             }
             set_default_color();
         }
@@ -138,7 +138,7 @@ void set_default_color(void) { printf("\e[39;40m"); };
 
 int get_x_direction(int y_position, int x_position, int x_direction, int p1_pos, int p2_pos) {
     int direction = x_direction;
-    if ((x_position == P1_COLUMN + 1|| x_position == P2_COLUMN - 1) &&
+    if ((x_position == p1_column + 1|| x_position == p2_column - 1) &&
         (y_position == p1_pos || y_position == p1_pos + 1 || y_position == p1_pos - 1 ||
          y_position == p2_pos || y_position == p2_pos + 1 || y_position == p2_pos - 1))
         direction *= -1;
@@ -147,7 +147,7 @@ int get_x_direction(int y_position, int x_position, int x_direction, int p1_pos,
 
 int get_y_direction(int y_position, int y_direction) {
     int direction = y_direction;
-    if (y_position == (BORDER_WIDTH - 2) || y_position == 1) direction *= -1;
+    if (y_position == (border_width - 2) || y_position == 1) direction *= -1;
     return direction;
 }
 
@@ -160,7 +160,7 @@ game_ball ball_movement(game_ball ball, int p1_row, int p2_row) {
 }
 
 game_ball ball_reset(game_ball ball) {
-    ball.x = BALL_INIT_COLUMN;
+    ball.x = ball_init_column;
     ball.y = BALL_INIT_ROW;
     ball.x_vector *= -1;
     return ball;
@@ -207,10 +207,10 @@ int move_p(int current_row_position, char key) {
     int new_position = 0;
 
     if (((key == 'a') || (key == 'A') || (key == 'k') || (key == 'K')) &&
-        !(current_row_position <= BORDER_WIDTH - BORDER_WIDTH + 2))
+        !(current_row_position <= border_width - border_width + 2))
         new_position = -1;
     else if (((key == 'z') || (key == 'Z') || (key == 'm') || (key == 'M')) &&
-             !(current_row_position >= BORDER_WIDTH - 3))
+             !(current_row_position >= border_width - 3))
         new_position = 1;
 
     return new_position;

@@ -141,7 +141,7 @@ void print_frame(game_ball ball, int p1_row, int p2_row, game_score score) {
 
 int get_x_direction(int y_position, int x_position, int x_direction, int p1_pos, int p2_pos) {
     int direction = x_direction;
-    if ((x_position == p1_column || x_position == p2_column) &&
+    if ((x_position == p1_column + 1|| x_position == p2_column - 1) &&
         (y_position == p1_pos || y_position == p1_pos + 1 || y_position == p1_pos - 1 ||
          y_position == p2_pos || y_position == p2_pos + 1 || y_position == p2_pos - 1))
         direction *= -1;
