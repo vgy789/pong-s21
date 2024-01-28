@@ -139,7 +139,7 @@ void set_default_color(void) { printf("\e[39;40m"); };
 
 int get_x_direction(int y_position, int x_position, int x_direction, int p1_pos, int p2_pos) {
     int direction = x_direction;
-    if ((x_position == P1_COLUMN || x_position == P2_COLUMN) &&
+    if ((x_position == P1_COLUMN + 1|| x_position == P2_COLUMN - 1) &&
         (y_position == p1_pos || y_position == p1_pos + 1 || y_position == p1_pos - 1 ||
          y_position == p2_pos || y_position == p2_pos + 1 || y_position == p2_pos - 1))
         direction *= -1;
