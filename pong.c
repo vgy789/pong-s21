@@ -48,8 +48,8 @@ int p1_control(char key, int current_pos);
 int p2_control(char key, int current_pos);
 
 game_ball ball_movement(game_ball ball, int p1_row, int p2_row);
-int get_x_direction(int y_position, int x_position, int x_direction, int p1_pos, int p2_pos);
-int get_y_direction(int y_position, int y_direction);
+int get_x_direction(int y_position, int y_direction, int x_position, int x_direction, int p1_pos, int p2_pos);
+int get_y_direction(int y_position, int y_direction, int x_position, int p1_pos, int p2_pos);
 game_ball ball_reset(game_ball ball);
 game_score upd_score(game_score score, game_ball ball);
 
@@ -134,24 +134,49 @@ void hide_cursor(void) { printf("\e[?25l"); }
 void show_cursor(void) { printf("\e[?25h"); }
 void set_default_color(void) { printf("\e[39;40m"); };
 
-int get_x_direction(int y_position, int x_position, int x_direction, int p1_pos, int p2_pos) {
+int get_x_direction(int y_position, int y_direction, int x_position, int x_direction, int p1_pos,
+                    int p2_pos) {
     int direction = x_direction;
-    if ((x_position == p1_column + 1 || x_position == p2_column - 1) &&
-        (y_position == p1_pos || y_position == p1_pos + 1 || y_position == p1_pos - 1 ||
-         y_position == p2_pos || y_position == p2_pos + 1 || y_position == p2_pos - 1))
-        direction *= -1;
+    if (x_position == p1_column + 1) {
+        if (y_position <= p1_pos + 2 && y_position >= p1_pos - 2) {
+            if ((y_position <= p1_pos + 1 && y_position >= p1_pos - 1) ||
+                (y_position == p1_pos + 2 && y_direction == -1) ||
+                (y_position == p1_pos - 2 && y_direction == 1))
+                direction *= -1;
+        }
+    }
+
+    if (x_position == p2_column - 1) {
+        if (y_position <= p2_pos + 2 && y_position >= p2_pos - 2) {
+            if ((y_position <= p2_pos + 1 && y_position >= p2_pos - 1) ||
+                (y_position == p2_pos + 2 && y_direction == -1) ||
+                (y_position == p2_pos - 2 && y_direction == 1))
+                direction *= -1;
+        }
+    }
+
     return direction;
 }
 
-int get_y_direction(int y_position, int y_direction) {
+int get_y_direction(int y_position, int y_direction, int x_position, int p1_pos, int p2_pos) {
     int direction = y_direction;
     if (y_position == (border_width - 2) || y_position == 1) direction *= -1;
+    if (x_position == p1_column + 1) {
+        if ((y_position == p1_pos + 2 && y_direction == -1) || (y_position == p1_pos - 2 && y_direction == 1))
+            direction *= -1;
+    }
+
+    if (x_position == p2_column - 1) {
+        if ((y_position == p2_pos + 2 && y_direction == -1) || (y_position == p2_pos - 2 && y_direction == 1))
+            direction *= -1;
+    }
+
     return direction;
 }
 
 game_ball ball_movement(game_ball ball, int p1_row, int p2_row) {
-    ball.x_vector = get_x_direction(ball.y, ball.x, ball.x_vector, p1_row, p2_row);
-    ball.y_vector = get_y_direction(ball.y, ball.y_vector);
+    ball.x_vector = get_x_direction(ball.y, ball.y_vector, ball.x, ball.x_vector, p1_row, p2_row);
+    ball.y_vector = get_y_direction(ball.y, ball.y_vector, ball.x, p1_row, p2_row);
     ball.x += ball.x_vector;
     ball.y += ball.y_vector;
     return ball;
