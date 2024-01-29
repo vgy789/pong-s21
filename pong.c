@@ -31,10 +31,10 @@ enum {
     win_score = 21,
 };
 
-const char* ch_ball = "\e[39;41m ";
-const char* border = "\e[39;46m ";
-const char* ch_net = "\e[39;100m ";
-const char* player = "\e[39;42m ";
+const char* ch_ball = "\e[31;41m ";
+const char* border = "\e[36;46m ";
+const char* ch_net = "\e[90;100m ";
+const char* player = "\e[32;42m ";
 const char* space = " ";
 
 void cls(void);
