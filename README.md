@@ -26,7 +26,7 @@ Pong is one of the first computer games, released in 1972 by Atari. The game sim
 - **Player 2 (right)**: 
   - `K` - move up
   - `M` - move down
-- `Q` - quit game
+  - `Q` - quit game
 
 ### Rules
 - Game goes up to 21 points
