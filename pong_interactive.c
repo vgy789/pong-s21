@@ -1,37 +1,9 @@
 #include <ncurses.h>
 #include <stdio.h>
-
-typedef struct {
-    int x;
-    int y;
-    int x_vector;
-    int y_vector;
-} game_ball;
-
-typedef struct {
-    int p1;
-    int p2;
-} game_score;
+#include "pong_common.h"
 
 enum {
     delay_duration = 100,
-
-    border_length = 80,
-    border_width = 25,
-    ball_init_column = border_length / 2,
-    ball_init_row = border_width / 2,
-
-    p1_column = 3,
-    p2_column = border_length - 4,
-    p_init_row = border_width / 2,
-    p_init_score = 0,
-
-    p1_score_pos1 = 30,
-    p1_score_pos2 = 31,
-    p2_score_pos1 = 49,
-    p2_score_pos2 = 50,
-
-    win_score = 21,
 };
 
 enum colors {
@@ -45,19 +17,9 @@ enum colors {
 
 void initcurses(void);
 void print_frame(game_ball ball, int p1_row, int p2_row, game_score score);
+void show_winner_screen(game_score score);
 void win_scr1(void);
 void win_scr2(void);
-int p1_control(char key, int current_pos);
-int p2_control(char key, int current_pos);
-
-game_ball ball_movement(game_ball ball, int p1_row, int p2_row);
-int get_x_direction(int y_position, int y_direction, int x_position, int x_direction, int p1_pos, int p2_pos);
-int get_y_direction(int y_position, int y_direction, int x_position, int p1_pos, int p2_pos);
-game_ball ball_reset(game_ball ball);
-game_score upd_score(game_score score, game_ball ball);
-void show_winner_screen(game_score score);
-
-_Bool is_round_won(game_ball ball) { return ball.x == 1 || ball.x == border_length - 1; }
 
 int main(void) {
     int key_pressed;
@@ -97,15 +59,6 @@ int main(void) {
 
     endwin();
     return 0;
-}
-
-void show_winner_screen(game_score score) {
-    attrset(COLOR_PAIR(COLOR_PAIR_WINNER));
-    printf("\n\n\n\n");
-    score.p1 == win_score ? win_scr1() : win_scr2();
-    refresh();
-    timeout(-1);
-    getch();
 }
 
 void initcurses(void) {
@@ -156,115 +109,19 @@ void print_frame(game_ball ball, int p1_row, int p2_row, game_score score) {
     print_score(score);
 }
 
-int get_x_direction(int y_position, int y_direction, int x_position, int x_direction, int p1_pos,
-                    int p2_pos) {
-    int direction = x_direction;
-    // проверяем, находимся ли мы в столбце напротив столбца ракетки
-    if (x_position == p1_column + 1) {
-        // проверяем, находимся ли мы рядом с ракеткой в столбце (включая клетки сверху и снизу от ракетки)
-        if (y_position <= p1_pos + 2 && y_position >= p1_pos - 2) {
-            // если мы находимся в трех клетках напротив ракетки, или сверху и движемся вниз, или снизу и
-            // движемся вверх, то мяч отскакивает
-            if ((y_position <= p1_pos + 1 && y_position >= p1_pos - 1) ||
-                (y_position == p1_pos + 2 && y_direction == -1) ||
-                (y_position == p1_pos - 2 && y_direction == 1))
-                direction *= -1;
-        }
-    }
-
-    // проверяем, находимся ли мы в столбце напротив столбца ракетки
-    if (x_position == p2_column - 1) {
-        // проверяем, находимся ли мы рядом с ракеткой в столбце (включая клетки сверху и снизу от ракетки)
-        if (y_position <= p2_pos + 2 && y_position >= p2_pos - 2) {
-            // если мы находимся в трех клетках напротив ракетки, или сверху и движемся вниз, или снизу и
-            // движемся вверх, то мяч отскакивает
-            if ((y_position <= p2_pos + 1 && y_position >= p2_pos - 1) ||
-                (y_position == p2_pos + 2 && y_direction == -1) ||
-                (y_position == p2_pos - 2 && y_direction == 1))
-                direction *= -1;
-        }
-    }
-
-    return direction;
-}
-
-int get_y_direction(int y_position, int y_direction, int x_position, int p1_pos, int p2_pos) {
-    int direction = y_direction;
-    if (y_position == (border_width - 2) || y_position == 1) direction *= -1;
-
-    if (x_position == p1_column + 1) {
-        //
-        if ((y_position == p1_pos + 2 && y_direction == -1) || (y_position == p1_pos - 2 && y_direction == 1))
-            direction *= -1;
-    }
-
-    if (x_position == p2_column - 1) {
-        //
-        if ((y_position == p2_pos + 2 && y_direction == -1) || (y_position == p2_pos - 2 && y_direction == 1))
-            direction *= -1;
-    }
-
-    return direction;
-}
-
-game_ball ball_movement(game_ball ball, int p1_row, int p2_row) {
-    ball.x_vector = get_x_direction(ball.y, ball.y_vector, ball.x, ball.x_vector, p1_row, p2_row);
-    ball.y_vector = get_y_direction(ball.y, ball.y_vector, ball.x, p1_row, p2_row);
-    ball.x += ball.x_vector;
-    ball.y += ball.y_vector;
-    return ball;
-}
-
-game_ball ball_reset(game_ball ball) {
-    ball.x = ball_init_column;
-    ball.y = ball_init_row;
-    ball.x_vector *= -1;
-    return ball;
-}
-
-game_score upd_score(game_score score, game_ball ball) {
-    ball.x == 1 ? ++score.p2 : ++score.p1;
-    return score;
-}
-
-int p1_control(char key, int current_pos) {
-    int move = 0;
-    if (((key == 'a') || (key == 'A')) && current_pos != 2) {
-        move = -1;
-    } else if (((key == 'z') || (key == 'Z')) && current_pos != border_width - 3) {
-        move = 1;
-    }
-    return move;
-}
-
-int p2_control(char key, int current_pos) {
-    int move = 0;
-    if (((key == 'k') || (key == 'K')) && current_pos != 2) {
-        move = -1;
-    } else if (((key == 'm') || (key == 'M')) && current_pos != border_width - 3) {
-        move = 1;
-    }
-    return move;
+void show_winner_screen(game_score score) {
+    attrset(COLOR_PAIR(COLOR_PAIR_WINNER));
+    printf("\n\n\n\n");
+    score.p1 == win_score ? win_scr1() : win_scr2();
+    refresh();
+    timeout(-1);
+    getch();
 }
 
 void win_scr1(void) {
-    printw("\n\n\n\n");
-    printw("           ########     ##      ##      ## #### ##    ##        \n");
-    printw("           ##     ##  ####      ##  ##  ##  ##  ###   ##        \n");
-    printw("           ##     ##    ##      ##  ##  ##  ##  ####  ##        \n");
-    printw("           ########     ##      ##  ##  ##  ##  ## ## ##        \n");
-    printw("           ##           ##      ##  ##  ##  ##  ##  ####        \n");
-    printw("           ##           ##      ##  ##  ##  ##  ##   ###        \n");
-    printw("           ##         ######     ###  ###  #### ##    ##        ");
+    printw(WIN_SCR1_TEXT);
 }
 
 void win_scr2(void) {
-    printw("\n\n\n\n");
-    printw("           ########   #######     ##      ## #### ##    ##        \n");
-    printw("           ##     ## ##     ##    ##  ##  ##  ##  ###   ##        \n");
-    printw("           ##     ##        ##    ##  ##  ##  ##  ####  ##        \n");
-    printw("           ########   #######     ##  ##  ##  ##  ## ## ##        \n");
-    printw("           ##        ##           ##  ##  ##  ##  ##  ####        \n");
-    printw("           ##        ##           ##  ##  ##  ##  ##   ###        \n");
-    printw("           ##        #########     ###  ###  #### ##    ##        ");
+    printw(WIN_SCR2_TEXT);
 }

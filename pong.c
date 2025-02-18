@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "pong_common.h"
 
 #define COLOR_BALL "\e[31;41m"     // red on red
 #define COLOR_BORDER "\e[36;46m"   // cyan on cyan
@@ -7,37 +8,6 @@
 #define COLOR_DEFAULT "\e[39;40m"  // default
 #define COLOR_WINNER "\e[33;40m"   // yellow on black
 #define SPACE " "
-
-typedef struct {
-    int x;
-    int y;
-    int x_vector;
-    int y_vector;
-} game_ball;
-
-typedef struct {
-    int p1;
-    int p2;
-} game_score;
-
-enum {
-    border_length = 80,
-    border_width = 25,
-    ball_init_column = border_length / 2,
-    ball_init_row = border_width / 2,
-
-    p1_column = 3,
-    p2_column = border_length - 4,
-    p_init_row = border_width / 2,
-    p_init_score = 0,
-
-    p1_score_pos1 = 30,
-    p1_score_pos2 = 31,
-    p2_score_pos1 = 49,
-    p2_score_pos2 = 50,
-
-    win_score = 21,
-};
 
 const char* ch_ball = COLOR_BALL SPACE;
 const char* border = COLOR_BORDER SPACE;
@@ -50,19 +20,9 @@ void print_frame(game_ball ball, int p1_row, int p2_row, game_score score);
 void hide_cursor(void);
 void show_cursor(void);
 void set_default_color(void);
+void show_winner_screen(game_score score);
 void win_scr1(void);
 void win_scr2(void);
-int p1_control(char key, int current_pos);
-int p2_control(char key, int current_pos);
-void show_winner_screen(game_score score);
-
-game_ball ball_movement(game_ball ball, int p1_row, int p2_row);
-int get_x_direction(int y_position, int y_direction, int x_position, int x_direction, int p1_pos, int p2_pos);
-int get_y_direction(int y_position, int y_direction, int x_position, int p1_pos, int p2_pos);
-game_ball ball_reset(game_ball ball);
-game_score upd_score(game_score score, game_ball ball);
-
-_Bool is_round_won(game_ball ball) { return ball.x == 1 || ball.x == border_length - 1; }
 
 int main(void) {
     int key_pressed;
@@ -101,7 +61,11 @@ int main(void) {
     return 0;
 }
 
+// Реализации функций для терминальной версии
 void cls(void) { printf("\e[1;1H\e[2J"); }
+void hide_cursor(void) { printf("\e[?25l"); }
+void show_cursor(void) { printf("\e[?25h"); }
+void set_default_color(void) { printf(COLOR_DEFAULT); }
 
 void print_score(int column, game_score score) {
     if (column == p1_score_pos1)
@@ -138,115 +102,17 @@ void print_frame(game_ball ball, int p1_row, int p2_row, game_score score) {
     }
 }
 
-void hide_cursor(void) { printf("\e[?25l"); }
-void show_cursor(void) { printf("\e[?25h"); }
-void set_default_color(void) { printf(COLOR_DEFAULT); };
-
-int get_x_direction(int y_position, int y_direction, int x_position, int x_direction, int p1_pos,
-                    int p2_pos) {
-    int direction = x_direction;
-    if (x_position == p1_column + 1) {
-        if (y_position <= p1_pos + 2 && y_position >= p1_pos - 2) {
-            if ((y_position <= p1_pos + 1 && y_position >= p1_pos - 1) ||
-                (y_position == p1_pos + 2 && y_direction == -1) ||
-                (y_position == p1_pos - 2 && y_direction == 1))
-                direction *= -1;
-        }
-    }
-
-    if (x_position == p2_column - 1) {
-        if (y_position <= p2_pos + 2 && y_position >= p2_pos - 2) {
-            if ((y_position <= p2_pos + 1 && y_position >= p2_pos - 1) ||
-                (y_position == p2_pos + 2 && y_direction == -1) ||
-                (y_position == p2_pos - 2 && y_direction == 1))
-                direction *= -1;
-        }
-    }
-
-    return direction;
-}
-
-int get_y_direction(int y_position, int y_direction, int x_position, int p1_pos, int p2_pos) {
-    int direction = y_direction;
-    if (y_position == (border_width - 2) || y_position == 1) direction *= -1;
-    if (x_position == p1_column + 1) {
-        if ((y_position == p1_pos + 2 && y_direction == -1) || (y_position == p1_pos - 2 && y_direction == 1))
-            direction *= -1;
-    }
-
-    if (x_position == p2_column - 1) {
-        if ((y_position == p2_pos + 2 && y_direction == -1) || (y_position == p2_pos - 2 && y_direction == 1))
-            direction *= -1;
-    }
-
-    return direction;
-}
-
-game_ball ball_movement(game_ball ball, int p1_row, int p2_row) {
-    ball.x_vector = get_x_direction(ball.y, ball.y_vector, ball.x, ball.x_vector, p1_row, p2_row);
-    ball.y_vector = get_y_direction(ball.y, ball.y_vector, ball.x, p1_row, p2_row);
-    ball.x += ball.x_vector;
-    ball.y += ball.y_vector;
-    return ball;
-}
-
-game_ball ball_reset(game_ball ball) {
-    ball.x = ball_init_column;
-    ball.y = ball_init_row;
-    ball.x_vector *= -1;
-    return ball;
-}
-
-game_score upd_score(game_score score, game_ball ball) {
-    ball.x == 1 ? ++score.p2 : ++score.p1;
-    return score;
-}
-
-void win_scr1(void) {
-    printf("\n\n\n\n");
-    printf("        ########     ##      ##      ## #### ##    ##        \n");
-    printf("        ##     ##  ####      ##  ##  ##  ##  ###   ##        \n");
-    printf("        ##     ##    ##      ##  ##  ##  ##  ####  ##        \n");
-    printf("        ########     ##      ##  ##  ##  ##  ## ## ##        \n");
-    printf("        ##           ##      ##  ##  ##  ##  ##  ####        \n");
-    printf("        ##           ##      ##  ##  ##  ##  ##   ###        \n");
-    printf("        ##         ######     ###  ###  #### ##    ##        ");
-}
-
-void win_scr2(void) {
-    printf("\n\n\n\n");
-    printf("        ########   #######     ##      ## #### ##    ##        \n");
-    printf("        ##     ## ##     ##    ##  ##  ##  ##  ###   ##        \n");
-    printf("        ##     ##        ##    ##  ##  ##  ##  ####  ##        \n");
-    printf("        ########   #######     ##  ##  ##  ##  ## ## ##        \n");
-    printf("        ##        ##           ##  ##  ##  ##  ##  ####        \n");
-    printf("        ##        ##           ##  ##  ##  ##  ##   ###        \n");
-    printf("        ##        #########     ###  ###  #### ##    ##        ");
-}
-
-int p1_control(char key, int current_pos) {
-    int move = 0;
-    if (((key == 'a') || (key == 'A')) && current_pos != 2) {
-        move = -1;
-    } else if (((key == 'z') || (key == 'Z')) && current_pos != border_width - 3) {
-        move = 1;
-    }
-    return move;
-}
-
-int p2_control(char key, int current_pos) {
-    int move = 0;
-    if (((key == 'k') || (key == 'K')) && current_pos != 2) {
-        move = -1;
-    } else if (((key == 'm') || (key == 'M')) && current_pos != border_width - 3) {
-        move = 1;
-    }
-    return move;
-}
-
 void show_winner_screen(game_score score) {
     printf(COLOR_WINNER);
     printf("\n\n\n\n");
     score.p1 == win_score ? win_scr1() : win_scr2();
     getchar();
+}
+
+void win_scr1(void) {
+    printf(WIN_SCR1_TEXT);
+}
+
+void win_scr2(void) {
+    printf(WIN_SCR2_TEXT);
 }
