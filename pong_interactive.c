@@ -34,6 +34,15 @@ enum {
     win_score = 21,
 };
 
+enum colors {
+    COLOR_PAIR_DEFAULT = 5,
+    COLOR_PAIR_WINNER = 6,
+    COLOR_PAIR_BALL = 1,
+    COLOR_PAIR_BORDER = 2,
+    COLOR_PAIR_NET = 3,
+    COLOR_PAIR_PLAYER = 4
+};
+
 void initcurses(void);
 void print_frame(game_ball ball, int p1_row, int p2_row, game_score score);
 void win_scr1(void);
@@ -46,6 +55,7 @@ int get_x_direction(int y_position, int y_direction, int x_position, int x_direc
 int get_y_direction(int y_position, int y_direction, int x_position, int p1_pos, int p2_pos);
 game_ball ball_reset(game_ball ball);
 game_score upd_score(game_score score, game_ball ball);
+void show_winner_screen(game_score score);
 
 _Bool is_round_won(game_ball ball) { return ball.x == 1 || ball.x == border_length - 1; }
 
@@ -82,12 +92,20 @@ int main(void) {
 
     clear();
     if (score.p1 == win_score || score.p2 == win_score) {
-        attrset(COLOR_PAIR(5));
-        score.p1 == win_score ? win_scr1() : win_scr2();
+        show_winner_screen(score);
     }
 
     endwin();
     return 0;
+}
+
+void show_winner_screen(game_score score) {
+    attrset(COLOR_PAIR(COLOR_PAIR_WINNER));
+    printf("\n\n\n\n");
+    score.p1 == win_score ? win_scr1() : win_scr2();
+    refresh();
+    timeout(-1);
+    getch();
 }
 
 void initcurses(void) {
@@ -100,11 +118,12 @@ void initcurses(void) {
     curs_set(0);           // скрыть курсор
 
     // создать цветовые пары
-    init_pair(1, COLOR_RED, COLOR_RED);
-    init_pair(2, COLOR_CYAN, COLOR_CYAN);
-    init_pair(3, COLOR_YELLOW, COLOR_YELLOW);
-    init_pair(4, COLOR_GREEN, COLOR_GREEN);
-    init_pair(5, -1, -1);
+    init_pair(COLOR_PAIR_BALL, COLOR_RED, COLOR_RED);
+    init_pair(COLOR_PAIR_BORDER, COLOR_CYAN, COLOR_CYAN);
+    init_pair(COLOR_PAIR_NET, COLOR_YELLOW, COLOR_YELLOW);
+    init_pair(COLOR_PAIR_PLAYER, COLOR_GREEN, COLOR_GREEN);
+    init_pair(COLOR_PAIR_DEFAULT, -1, -1);
+    init_pair(COLOR_PAIR_WINNER, COLOR_YELLOW, COLOR_BLACK);
 }
 
 void print_score(game_score score) {
@@ -118,19 +137,19 @@ void print_frame(game_ball ball, int p1_row, int p2_row, game_score score) {
     for (int row = 0; row < border_width; ++row) {
         for (int col = 0; col < border_length; ++col) {
             if ((row == 0 || row == border_width - 1) || (col == 0 || col == border_length - 1)) {
-                attrset(COLOR_PAIR(2));
+                attrset(COLOR_PAIR(COLOR_PAIR_BORDER));
             } else if (row == ball.y && col == ball.x) {
-                attrset(COLOR_PAIR(1));
+                attrset(COLOR_PAIR(COLOR_PAIR_BALL));
             } else if ((row >= p1_row - 1 && row <= p1_row + 1 && col == p1_column) ||
                        (row >= p2_row - 1 && row <= p2_row + 1 && col == p2_column)) {
-                attrset(COLOR_PAIR(4));
+                attrset(COLOR_PAIR(COLOR_PAIR_PLAYER));
             } else if (col == ball_init_column) {
-                attrset(COLOR_PAIR(3));
+                attrset(COLOR_PAIR(COLOR_PAIR_NET));
             } else {
-                attrset(COLOR_PAIR(5));
+                attrset(COLOR_PAIR(COLOR_PAIR_DEFAULT));
             }
             printw(" ");
-            attrset(COLOR_PAIR(5));
+            attrset(COLOR_PAIR(COLOR_PAIR_DEFAULT));
         }
         printw("\n");
     }
@@ -229,21 +248,23 @@ int p2_control(char key, int current_pos) {
 }
 
 void win_scr1(void) {
-    printw("        ########     ##      ##      ## #### ##    ##        \n");
-    printw("        ##     ##  ####      ##  ##  ##  ##  ###   ##        \n");
-    printw("        ##     ##    ##      ##  ##  ##  ##  ####  ##        \n");
-    printw("        ########     ##      ##  ##  ##  ##  ## ## ##        \n");
-    printw("        ##           ##      ##  ##  ##  ##  ##  ####        \n");
-    printw("        ##           ##      ##  ##  ##  ##  ##   ###        \n");
-    printw("        ##         ######     ###  ###  #### ##    ##        ");
+    printw("\n\n\n\n");
+    printw("           ########     ##      ##      ## #### ##    ##        \n");
+    printw("           ##     ##  ####      ##  ##  ##  ##  ###   ##        \n");
+    printw("           ##     ##    ##      ##  ##  ##  ##  ####  ##        \n");
+    printw("           ########     ##      ##  ##  ##  ##  ## ## ##        \n");
+    printw("           ##           ##      ##  ##  ##  ##  ##  ####        \n");
+    printw("           ##           ##      ##  ##  ##  ##  ##   ###        \n");
+    printw("           ##         ######     ###  ###  #### ##    ##        ");
 }
 
 void win_scr2(void) {
-    printw("        ########   #######     ##      ## #### ##    ##        \n");
-    printw("        ##     ## ##     ##    ##  ##  ##  ##  ###   ##        \n");
-    printw("        ##     ##        ##    ##  ##  ##  ##  ####  ##        \n");
-    printw("        ########   #######     ##  ##  ##  ##  ## ## ##        \n");
-    printw("        ##        ##           ##  ##  ##  ##  ##  ####        \n");
-    printw("        ##        ##           ##  ##  ##  ##  ##   ###        \n");
-    printw("        ##        #########     ###  ###  #### ##    ##        ");
+    printw("\n\n\n\n");
+    printw("           ########   #######     ##      ## #### ##    ##        \n");
+    printw("           ##     ## ##     ##    ##  ##  ##  ##  ###   ##        \n");
+    printw("           ##     ##        ##    ##  ##  ##  ##  ####  ##        \n");
+    printw("           ########   #######     ##  ##  ##  ##  ## ## ##        \n");
+    printw("           ##        ##           ##  ##  ##  ##  ##  ####        \n");
+    printw("           ##        ##           ##  ##  ##  ##  ##   ###        \n");
+    printw("           ##        #########     ###  ###  #### ##    ##        ");
 }

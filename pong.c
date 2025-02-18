@@ -1,5 +1,13 @@
 #include <stdio.h>
 
+#define COLOR_BALL "\e[31;41m"     // red on red
+#define COLOR_BORDER "\e[36;46m"   // cyan on cyan
+#define COLOR_NET "\e[90;100m"     // gray on gray
+#define COLOR_PLAYER "\e[32;42m"   // green on green
+#define COLOR_DEFAULT "\e[39;40m"  // default
+#define COLOR_WINNER "\e[33;40m"   // yellow on black
+#define SPACE " "
+
 typedef struct {
     int x;
     int y;
@@ -31,11 +39,11 @@ enum {
     win_score = 21,
 };
 
-const char* ch_ball = "\e[31;41m ";
-const char* border = "\e[36;46m ";
-const char* ch_net = "\e[90;100m ";
-const char* player = "\e[32;42m ";
-const char* space = " ";
+const char* ch_ball = COLOR_BALL SPACE;
+const char* border = COLOR_BORDER SPACE;
+const char* ch_net = COLOR_NET SPACE;
+const char* player = COLOR_PLAYER SPACE;
+const char* space = SPACE;
 
 void cls(void);
 void print_frame(game_ball ball, int p1_row, int p2_row, game_score score);
@@ -46,6 +54,7 @@ void win_scr1(void);
 void win_scr2(void);
 int p1_control(char key, int current_pos);
 int p2_control(char key, int current_pos);
+void show_winner_screen(game_score score);
 
 game_ball ball_movement(game_ball ball, int p1_row, int p2_row);
 int get_x_direction(int y_position, int y_direction, int x_position, int x_direction, int p1_pos, int p2_pos);
@@ -84,8 +93,7 @@ int main(void) {
 
     cls();
     if (score.p1 == win_score || score.p2 == win_score) {
-        printf("\e[32;49m");
-        score.p1 == win_score ? win_scr1() : win_scr2();
+        show_winner_screen(score);
     }
 
     show_cursor();
@@ -132,7 +140,7 @@ void print_frame(game_ball ball, int p1_row, int p2_row, game_score score) {
 
 void hide_cursor(void) { printf("\e[?25l"); }
 void show_cursor(void) { printf("\e[?25h"); }
-void set_default_color(void) { printf("\e[39;40m"); };
+void set_default_color(void) { printf(COLOR_DEFAULT); };
 
 int get_x_direction(int y_position, int y_direction, int x_position, int x_direction, int p1_pos,
                     int p2_pos) {
@@ -195,6 +203,7 @@ game_score upd_score(game_score score, game_ball ball) {
 }
 
 void win_scr1(void) {
+    printf("\n\n\n\n");
     printf("        ########     ##      ##      ## #### ##    ##        \n");
     printf("        ##     ##  ####      ##  ##  ##  ##  ###   ##        \n");
     printf("        ##     ##    ##      ##  ##  ##  ##  ####  ##        \n");
@@ -205,6 +214,7 @@ void win_scr1(void) {
 }
 
 void win_scr2(void) {
+    printf("\n\n\n\n");
     printf("        ########   #######     ##      ## #### ##    ##        \n");
     printf("        ##     ## ##     ##    ##  ##  ##  ##  ###   ##        \n");
     printf("        ##     ##        ##    ##  ##  ##  ##  ####  ##        \n");
@@ -232,4 +242,11 @@ int p2_control(char key, int current_pos) {
         move = 1;
     }
     return move;
+}
+
+void show_winner_screen(game_score score) {
+    printf(COLOR_WINNER);
+    printf("\n\n\n\n");
+    score.p1 == win_score ? win_scr1() : win_scr2();
+    getchar();
 }
